@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: redux-kata
+    volumes: 
+      - ".:/usr/src/app"

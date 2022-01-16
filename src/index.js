@@ -1,7 +1,12 @@
 const { createStore } = require("redux");
 const { counterTypes } = require("./types");
 
-const counterReducer = (state = 0, action) => {
+const INITIAL_STATE = 0;
+
+const increment = () => ({ type: counterTypes.INCREMENT });
+const decrement = () => ({ type: counterTypes.DECREMENT });
+
+const counterReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case counterTypes.INCREMENT:
       return state + 1;
@@ -16,22 +21,14 @@ const store = createStore(counterReducer);
 
 store.subscribe(() => console.log(store.getState()));
 
-store.dispatch({
-    type: counterTypes.INCREMENT
-});
+store.dispatch(increment());
 
-store.dispatch({
-    type: counterTypes.INCREMENT
-});
+store.dispatch(increment());
 
-store.dispatch({
-    type: counterTypes.INCREMENT
-});
+store.dispatch(increment());
 
-store.dispatch({
-    type: counterTypes.INCREMENT
-});
+store.dispatch(increment());
 
-store.dispatch({
-    type: counterTypes.INCREMENT
-});
+store.dispatch(increment());
+
+store.dispatch(decrement());
