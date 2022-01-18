@@ -1,4 +1,4 @@
-const { createStore } = require("redux");
+const { createStore, combineReducers } = require("redux");
 const { counterTypes, filterTypes } = require("./types");
 
 const INITIAL_STATE = 0;
@@ -18,11 +18,6 @@ const completeTodo = (payload) => ({
   payload
 });
 
-const INITIAL_TODO_STATE = {
-  todos: [],
-  filter: filters.ALL
-};
-
 const counterReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case counterTypes.INCREMENT:
@@ -34,41 +29,46 @@ const counterReducer = (state = INITIAL_STATE, action) => {
   }
 };
 
-const filterReducer = (state = INITIAL_TODO_STATE, action) => {
+const filterReducer = (state = filters.ALL, action) => {
   switch (action.type) {
     case filterTypes.SET_FILTER:
-      return {
-        ...state,
-        filter: action.payload
-      };
-    case filterTypes.ADD_TODO:
-      return {
-        ...state,
-        todos: [action.payload].concat(state.todos)
-      };
-    case filterTypes.COMPLETE_TODO:
-      return {
-        ...state,
-        todos: state.todos.map((todo, index) =>
-          i === action.payload
-            ? {
-                ...todo,
-                completed: true
-              }
-            : todo
-        )
-      };
+      return action.payload;
     default:
       return state;
   }
 };
 
-const store = createStore(filterReducer);
+const todosReducer = (state = [], action) => {
+  switch (action.type) {
+    case filterTypes.ADD_TODO:
+      return [action.payload].concat(state);
+    case filterTypes.COMPLETE_TODO:
+      return state.map((todo, index) =>
+        i === action.payload
+          ? {
+              ...todo,
+              completed: true
+            }
+          : todo
+      );
+    default:
+      return state;
+  }
+};
+
+const reducer = combineReducers({
+  filter: filterReducer,
+  todos: todosReducer
+});
+
+const store = createStore(reducer);
 
 store.subscribe(() => console.log(store.getState()));
 
 store.dispatch(setFilter(filters.COMPLETED));
 
-store.dispatch(addTodo({
-  text: 'First Todo'
-}));
+store.dispatch(
+  addTodo({
+    text: "First Todo"
+  })
+);
