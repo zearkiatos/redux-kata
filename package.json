@@ -4,6 +4,7 @@
   "description": "This is a project with node 🟩 to practice redux concepts.",
   "scripts": {
     "start": "node ./src/index.js",
+    "start:boiler": "node ./src/boilerplate.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
