@@ -12,12 +12,64 @@ const makeActionCreator =
     return action;
   };
 
-const ADD_TODO = type("ADD_TODO");
-const REMOVE_TODO = type("REMOVE_TODO");
-const UPDATE_TODO = type("UPDATE_TODO");
+const FETCH_START = "TODOS_FETCH_START";
+const FETCH_SUCCESS = "TODOS_FETCH_SUCCESS";
+const FETCH_ERROR = "TODOS_FETCH_ERROR";
 
-const addTodo = makeActionCreator(ADD_TODO, "payload");
-const removeTodo = makeActionCreator(REMOVE_TODO, "payload");
-const updateTodo = makeActionCreator(UPDATE_TODO, "payload");
+const initialState = {
+  data: [],
+  fetched: false,
+  fetching: false
+};
 
-console.log(addTodo(1));
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case FETCH_START: {
+      return {
+        ...state,
+        fetching: true
+      };
+    }
+    case FETCH_SUCCESS: {
+      return {
+        ...state,
+        fetching: false,
+        fetched: true,
+        data: action.payload
+      };
+    }
+    case FETCH_ERROR: {
+      return {
+        ...state,
+        fetching: false,
+        error: action.error
+      };
+    }
+  }
+};
+
+const startFetch = () => ({
+  type: FETCH_START
+});
+
+const successFetch = (payload) => ({
+  type: FETCH_ERROR
+});
+
+const errorFetch = (error) => ({
+  type: FETCH_ERROR,
+  error
+});
+
+const fetch = () => {
+  async (dispatch) => {
+    dispatch(startFetch());
+    try {
+      const response = await fetch("/todos");
+      const data = await response.json();
+      dispatch(successFetch(data));
+    } catch (ex) {
+      dispatch(errorFetch(ex));
+    }
+  };
+};
