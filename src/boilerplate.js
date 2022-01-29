@@ -1,4 +1,4 @@
-const makeType = (module) => (type) => `${module}/${type}`;
+const makeType = (module) => (type) => `${module}_${type}`;
 
 const type = makeType("LIST");
 
@@ -12,9 +12,11 @@ const makeActionCreator =
     return action;
   };
 
-const FETCH_START = "TODOS_FETCH_START";
-const FETCH_SUCCESS = "TODOS_FETCH_SUCCESS";
-const FETCH_ERROR = "TODOS_FETCH_ERROR";
+const type = makeType('TODOS');
+
+const FETCH_START = type('FETCH_START');
+const FETCH_SUCCESS = type('FETCH_SUCCESS');
+const FETCH_ERROR = type('FETCH_ERROR');
 
 const initialState = {
   data: [],
@@ -48,18 +50,11 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-const startFetch = () => ({
-  type: FETCH_START
-});
+const startFetch = makeActionCreator(FETCH_START);
 
-const successFetch = (payload) => ({
-  type: FETCH_ERROR
-});
+const successFetch = makeActionCreator(FETCH_SUCCESS, 'payload');
 
-const errorFetch = (error) => ({
-  type: FETCH_ERROR,
-  error
-});
+const errorFetch = makeActionCreator(FETCH_ERROR, 'error');
 
 const fetch = () => {
   async (dispatch) => {
