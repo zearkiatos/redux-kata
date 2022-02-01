@@ -19,52 +19,61 @@ const createReducer =
       ? handlers[action.type](type, action)
       : state;
 
-const type = makeType("TODOS");
+const reducerCreator = (resource, path) => {
+  const type = makeType(resource);
 
-const FETCH_START = type("FETCH_START");
-const FETCH_SUCCESS = type("FETCH_SUCCESS");
-const FETCH_ERROR = type("FETCH_ERROR");
+  const FETCH_START = type("FETCH_START");
+  const FETCH_SUCCESS = type("FETCH_SUCCESS");
+  const FETCH_ERROR = type("FETCH_ERROR");
 
-const initialState = {
-  data: [],
-  fetched: false,
-  fetching: false
-};
+  const initialState = {
+    data: [],
+    fetched: false,
+    fetching: false
+  };
 
-const fetchStartReducer = (state) => ({ ...state, fetching: true });
-const fetchSuccessReducer = (state, action) => ({
-  ...state,
-  fetching: false,
-  fetched: true,
-  data: action.payload
-});
-const fetchErrorReducer = (state, action) => ({
-  ...state,
-  fetching: false,
-  error: action.error
-});
+  const fetchStartReducer = (state) => ({ ...state, fetching: true });
+  const fetchSuccessReducer = (state, action) => ({
+    ...state,
+    fetching: false,
+    fetched: true,
+    data: action.payload
+  });
+  const fetchErrorReducer = (state, action) => ({
+    ...state,
+    fetching: false,
+    error: action.error
+  });
 
-const reducer = createReducer(initialState, {
-  [FETCH_START]: fetchStartReducer,
-  [FETCH_SUCCESS]: fetchSuccessReducer,
-  [FETCH_ERROR]: fetchErrorReducer
-});
+  const reducer = createReducer(initialState, {
+    [FETCH_START]: fetchStartReducer,
+    [FETCH_SUCCESS]: fetchSuccessReducer,
+    [FETCH_ERROR]: fetchErrorReducer
+  });
 
-const startFetch = makeActionCreator(FETCH_START);
+  const startFetch = makeActionCreator(FETCH_START);
 
-const successFetch = makeActionCreator(FETCH_SUCCESS, "payload");
+  const successFetch = makeActionCreator(FETCH_SUCCESS, "payload");
 
-const errorFetch = makeActionCreator(FETCH_ERROR, "error");
+  const errorFetch = makeActionCreator(FETCH_ERROR, "error");
 
-const fetch = () => {
-  async (dispatch) => {
-    dispatch(startFetch());
-    try {
-      const response = await fetch("/todos");
-      const data = await response.json();
-      dispatch(successFetch(data));
-    } catch (ex) {
-      dispatch(errorFetch(ex));
-    }
+  const fetch = () => {
+    async (dispatch) => {
+      dispatch(startFetch());
+      try {
+        const response = await fetch(path);
+        const data = await response.json();
+        dispatch(successFetch(data));
+      } catch (ex) {
+        dispatch(errorFetch(ex));
+      }
+    };
+  };
+  return {
+    reducer,
+    fetch
   };
 };
+
+const todosReducerCreator = reducerCreator("TODOS", "/todos");
+export default todosReducerCreator;
